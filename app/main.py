@@ -6,7 +6,7 @@ import os
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from aiogram.fsm.storage.redis import RedisStorage
+from aiogram.fsm.storage.memory import MemoryStorage
 from aiohttp import web
 from loguru import logger
 
@@ -22,14 +22,7 @@ async def main() -> None:
 
     bot = Bot(token=settings.BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
-    try:
-        storage = RedisStorage.from_url(settings.REDIS_URL)
-    except Exception:
-        from aiogram.fsm.storage.memory import MemoryStorage
-
-        logger.warning("Redis ulanmadi, MemoryStorage ishlatilmoqda (production uchun tavsiya etilmaydi).")
-        storage = MemoryStorage()
-
+    storage = MemoryStorage()
     dp = Dispatcher(storage=storage)
 
     for observer in (dp.message, dp.callback_query):
